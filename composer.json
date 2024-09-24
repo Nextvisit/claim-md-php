@@ -1,0 +1,21 @@
+{
+    "name": "nextvisit/claim-md-php",
+    "version": "1.0.0",
+    "description": "A wrapper for the ClaimMD API.",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "7.9",
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Nextvisit\\ClaimMDWrapper\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "kyleyannelli",
+            "email": "kyleyannelli@gmail.com"
+        }
+    ]
+}
