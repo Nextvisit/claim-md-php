@@ -1,8 +1,8 @@
-# Unofficial ClaimMD PHP Wrapper
+# ClaimMD PHP Wrapper
 
 ![CLAIM.md](https://cdn.prod.website-files.com/6619250355c3f9e1344f80b5/6619305fba1aef8ce5858ae7_claimmd_glow_120.png)
 
-Welcome to the unofficial PHP wrapper for the [CLAIM.MD](https://www.claim.md/) API! 🎉 This library aims to simplify interactions with the CLAIM.md API, providing a more developer-friendly way to integrate CLAIM.md services into your PHP applications.
+Welcome to the unofficial PHP wrapper for the [CLAIM.MD](https://www.claim.md/) API! 🎉 This library aims to simplify interactions with the official CLAIM.md API, providing a more developer-friendly way to integrate CLAIM.md services into your PHP applications.
 
 ## ⚠️ Disclaimer
 **Nextvisit Inc. is not affiliated with CLAIM.MD in any way. This package is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. Use at your own risk.**
