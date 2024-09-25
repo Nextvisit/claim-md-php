@@ -2,14 +2,35 @@
 
 namespace Nextvisit\ClaimMDWrapper\DTO;
 
+/**
+ * Class ClaimAppealDTO
+ *
+ * Data Transfer Object for claim appeal information.
+ */
 readonly class ClaimAppealDTO
 {
     /**
+     * ClaimAppealDTO constructor.
+     *
      * Can easily construct specific fields. For example:
      *  new ClaimAppealDTO(
      *      fieldName: "value"
      *  )
      *
+     * @param string|null $claimId
+     * @param string|null $remoteClaimId
+     * @param string|null $contactName
+     * @param string|null $contactTitle
+     * @param string|null $contactEmail
+     * @param string|null $contactPhone
+     * @param string|null $contactFax
+     * @param string|null $contactAddr1
+     * @param string|null $contactAddr2
+     * @param string|null $contactCity
+     * @param string|null $contactState
+     * @param string|null $contactZip
+     *
+     * @throws \InvalidArgumentException If validation fails
      */
     public function __construct(
         public ?string $claimId = null,
@@ -32,6 +53,11 @@ readonly class ClaimAppealDTO
         $this->validateStateCode();
     }
 
+    /**
+     * Validate that either claimId or remoteClaimId is provided.
+     *
+     * @throws \InvalidArgumentException If neither claimId nor remoteClaimId is provided
+     */
     private function validateRequiredFields(): void
     {
         if (empty($this->claimId) && empty($this->remoteClaimId)) {
@@ -39,6 +65,11 @@ readonly class ClaimAppealDTO
         }
     }
 
+    /**
+     * Validate the email address.
+     *
+     * @throws \InvalidArgumentException If the email is invalid
+     */
     private function validateEmail(): void
     {
         if ($this->contactEmail && !filter_var($this->contactEmail, FILTER_VALIDATE_EMAIL)) {
@@ -46,6 +77,14 @@ readonly class ClaimAppealDTO
         }
     }
 
+    /**
+     * Validate a phone number.
+     *
+     * @param string|null $phoneNumber The phone number to validate
+     * @param string $fieldName The name of the field being validated
+     *
+     * @throws \InvalidArgumentException If the phone number is invalid
+     */
     private function validatePhoneNumber(?string $phoneNumber, string $fieldName): void
     {
         if ($phoneNumber && !preg_match('/^\+?[0-9\-\(\)\s]+$/', $phoneNumber)) {
@@ -53,6 +92,11 @@ readonly class ClaimAppealDTO
         }
     }
 
+    /**
+     * Validate the state code.
+     *
+     * @throws \InvalidArgumentException If the state code is invalid
+     */
     private function validateStateCode(): void
     {
         if ($this->contactState && !preg_match('/^[A-Z]{2}$/', $this->contactState)) {
@@ -60,6 +104,11 @@ readonly class ClaimAppealDTO
         }
     }
 
+    /**
+     * Convert the DTO to an array.
+     *
+     * @return array
+     */
     public function toArray(): array
     {
         return array_filter([
@@ -78,6 +127,12 @@ readonly class ClaimAppealDTO
         ], fn($value) => $value !== null);
     }
 
+    /**
+     * Create a ClaimAppealDTO from an array.
+     *
+     * @param array $data
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
         return new self(
