@@ -6,6 +6,11 @@ use GuzzleHttp\Exception\GuzzleException;
 use Nextvisit\ClaimMDWrapper\Client;
 use Nextvisit\ClaimMDWrapper\DTO\ERADTO;
 
+/**
+ * Class ERARequest
+ *
+ * This class handles requests related to Electronic Remittance Advice (ERA).
+ */
 class ERARequest
 {
     private const ERA_LIST_ENDPOINT = '/services/eralist/';
@@ -13,6 +18,11 @@ class ERARequest
     private const ERA_PDF_ENDPOINT = '/services/erapdf/';
     private const ERA_JSON_ENDPOINT = '/services/eradata/';
 
+    /**
+     * ERARequest constructor.
+     *
+     * @param Client $client The client used to send requests.
+     */
     public function __construct(private readonly Client $client) {}
 
     /**
@@ -20,7 +30,7 @@ class ERARequest
      *
      * @param string $eraId The ID of the electronic remittance advice.
      * @return array The JSON representation of the electronic remittance advice.
-     * @throws GuzzleException HTTP Request Failure
+     * @throws GuzzleException If an HTTP request error occurs.
      */
     public function getJson(string $eraId): array
     {
@@ -33,7 +43,7 @@ class ERARequest
      * @param string $eraId The ID of the era to get the PDF for.
      * @param string|null $pcn An optional parameter for the PCN.
      * @return array The response from the client request containing the PDF data (Base64 Encoded).
-     * @throws GuzzleException HTTP Request Failure
+     * @throws GuzzleException If an HTTP request error occurs.
      */
     public function getPDF(string $eraId, ?string $pcn = null): array
     {
@@ -45,7 +55,7 @@ class ERARequest
      *
      * @param string $eraId The identifier for the ERA to be retrieved.
      * @return array The 835 ERA data as an array.
-     * @throws GuzzleException HTTP Request Failure
+     * @throws GuzzleException If an HTTP request error occurs.
      */
     public function get835(string $eraId): array
     {
@@ -57,7 +67,7 @@ class ERARequest
      *
      * @param array|ERADTO $era Array or The DTO containing the parameters for the request.
      * @return array The list of electronic remittance advices.
-     * @throws GuzzleException HTTP Request Failure
+     * @throws GuzzleException If an HTTP request error occurs.
      */
     public function getList(array|ERADTO $era): array
     {

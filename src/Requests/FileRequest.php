@@ -8,11 +8,21 @@ use InvalidArgumentException;
 use Nextvisit\ClaimMDWrapper\Client;
 use Psr\Http\Message\StreamInterface;
 
+/**
+ * Class FileRequest
+ *
+ * Handles file-related requests to the Claim.MD service.
+ */
 class FileRequest
 {
     private const UPLOAD_ENDPOINT = '/services/upload';
     private const UPLOAD_LIST_ENDPOINT = '/services/uploadlist';
 
+    /**
+     * FileRequest constructor.
+     *
+     * @param Client $client The HTTP client for making requests
+     */
     public function __construct(private readonly Client $client)
     {
     }
@@ -67,8 +77,10 @@ class FileRequest
     }
 
     /**
-     * @param $file
-     * @return StreamInterface
+     * Prepare the file for upload by converting it to a StreamInterface
+     *
+     * @param resource $file The file resource to prepare
+     * @return StreamInterface The prepared file as a StreamInterface
      * @throws InvalidArgumentException If file is not a valid resource.
      */
     private function prepareFile($file): StreamInterface

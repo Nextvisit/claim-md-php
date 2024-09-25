@@ -7,20 +7,38 @@ use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
 use Nextvisit\ClaimMDWrapper\Client;
 
+/**
+ * Class ResponseRequest
+ *
+ * Handles response-related requests to the Claim.MD service.
+ */
 class ResponseRequest
 {
+    /**
+     * The endpoint for response-related requests.
+     */
     private const RESPONSE_ENDPOINT = '/services/response/';
 
+    /**
+     * ResponseRequest constructor.
+     *
+     * @param Client $client The HTTP client for making requests
+     */
     public function __construct(private readonly Client $client) {}
 
     /**
      * Fetch responses from the API
      *
+     * This method retrieves responses from the Claim.MD API. It can fetch responses
+     * after a specific ResponseID and optionally for a specific claim.
+     *
      * @param string $responseId The ResponseID to fetch responses after (use '0' for first request)
      * @param string|null $claimId Optional ClaimID to fetch responses for a specific claim
-     * @return array The API response
+     *
+     * @return array The API response containing the fetched responses
+     *
      * @throws InvalidArgumentException If the responseId is empty
-     * @throws GuzzleException HTTP Request Failure
+     * @throws GuzzleException If there's an HTTP request failure during the API call
      */
     public function fetchResponses(string $responseId, ?string $claimId = null): array
     {
@@ -42,9 +60,14 @@ class ResponseRequest
     /**
      * Fetch all responses, handling pagination automatically
      *
+     * This method retrieves all responses from the Claim.MD API, automatically
+     * handling pagination. It yields each page of responses as they are fetched.
+     *
      * @param string|null $claimId Optional ClaimID to fetch responses for a specific claim
-     * @return Generator
-     * @throws GuzzleException
+     *
+     * @return Generator A generator that yields each page of responses
+     *
+     * @throws GuzzleException If there's an HTTP request failure during any of the API calls
      */
     public function fetchAllResponses(?string $claimId = null): Generator
     {
