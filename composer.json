@@ -15,8 +15,13 @@
     },
     "authors": [
         {
-            "name": "kyleyannelli",
+            "name": "Kyle Yannelli",
+            "github": "kyleyannelli",
             "email": "kyleyannelli@gmail.com"
+        },
+        {
+            "name": "Ryan Yannelli",
+            "github": "yannelli"
         }
     ],
     "keywords": [
