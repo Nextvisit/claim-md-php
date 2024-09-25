@@ -1,11 +1,12 @@
 {
     "name": "nextvisit/claim-md-php",
-    "version": "1.0.0",
     "description": "A wrapper for the ClaimMD API.",
     "type": "library",
+    "license": "MIT",
     "require": {
-        "guzzlehttp/guzzle": "7.9",
-        "php": ">=8.2"
+        "php": ">=8.2",
+        "guzzlehttp/guzzle": "^7.9",
+        "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
@@ -17,5 +18,18 @@
             "name": "kyleyannelli",
             "email": "kyleyannelli@gmail.com"
         }
-    ]
+    ],
+    "keywords": [
+        "claimmd",
+        "api",
+        "wrapper"
+    ],
+    "homepage": "https://github.com/Nextvisit/claim-md-php",
+    "support": {
+        "issues": "https://github.com/Nextvisit/claim-md-php/issues"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable"
 }
