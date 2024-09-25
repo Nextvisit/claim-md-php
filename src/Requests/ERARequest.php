@@ -65,12 +65,15 @@ class ERARequest
     /**
      * Retrieves a list of electronic remittance advices.
      *
-     * @param array|ERADTO $era Array or The DTO containing the parameters for the request.
+     * @param array|ERADTO|null $era Optional array or The DTO containing the parameters for the request.
      * @return array The list of electronic remittance advices.
      * @throws GuzzleException If an HTTP request error occurs.
      */
-    public function getList(array|ERADTO $era): array
+    public function getList(array|ERADTO|null $era = []): array
     {
+        if ($era === null || $era === []) {
+            return $this->client->sendRequest('POST', self::ERA_LIST_ENDPOINT);
+        }
         if ($era instanceof ERADTO) {
             return $this->client->sendRequest('POST', self::ERA_LIST_ENDPOINT, $era->toArray());
         }
