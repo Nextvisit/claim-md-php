@@ -1,8 +1,9 @@
 {
     "name": "nextvisit/claim-md-php",
-    "description": "A wrapper for the ClaimMD API.",
+    "description": "An unofficial PHP wrapper for the official Claim.MD API.",
     "type": "library",
     "license": "MIT",
+    "version": "1.0.0",
     "require": {
         "php": ">=8.2",
         "guzzlehttp/guzzle": "^7.9",
@@ -17,17 +18,22 @@
         {
             "name": "Kyle Yannelli",
             "github": "kyleyannelli",
-            "email": "kyleyannelli@gmail.com"
+            "email": "kyleyannelli@gmail.com",
+            "role": "Developer"
         },
         {
             "name": "Ryan Yannelli",
-            "github": "yannelli"
+            "github": "yannelli",
+            "email": "ryanyannelli@gmail.com",
+            "role": "Developer"
         }
     ],
     "keywords": [
         "claimmd",
         "api",
-        "wrapper"
+        "insurance-claims",
+        "x12",
+        "php-wrapper"
     ],
     "homepage": "https://github.com/Nextvisit/claim-md-php",
     "support": {
