@@ -1,3 +1,5 @@
+[![Tests](https://github.com/Nextvisit/claim-md-php/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Nextvisit/claim-md-php/actions/workflows/tests.yml)
+
 # Claim.MD PHP SDK
 
 ![CLAIM.md](https://cdn.prod.website-files.com/6619250355c3f9e1344f80b5/6619305fba1aef8ce5858ae7_claimmd_glow_120.png)
