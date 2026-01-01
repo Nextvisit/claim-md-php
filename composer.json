@@ -3,28 +3,36 @@
     "description": "An unofficial PHP wrapper for the official Claim.MD API.",
     "type": "library",
     "license": "MIT",
-    "version": "1.0.1",
     "require": {
         "php": ">=8.2",
         "guzzlehttp/guzzle": "^7.9",
         "ext-json": "*"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6",
+        "pestphp/pest": "^3.0"
     },
     "autoload": {
         "psr-4": {
             "Nextvisit\\ClaimMDWrapper\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "Nextvisit\\ClaimMDWrapper\\Tests\\": "tests/"
+        }
+    },
     "authors": [
         {
             "name": "Kyle Yannelli",
-            "github": "kyleyannelli",
             "email": "kyleyannelli@gmail.com",
+            "homepage": "https://github.com/kyleyannelli",
             "role": "Developer"
         },
         {
             "name": "Ryan Yannelli",
-            "github": "yannelli",
             "email": "ryanyannelli@gmail.com",
+            "homepage": "https://github.com/yannelli",
             "role": "Developer"
         }
     ],
@@ -40,7 +48,14 @@
         "issues": "https://github.com/Nextvisit/claim-md-php/issues"
     },
     "config": {
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    },
+    "scripts": {
+        "test": "pest",
+        "test:coverage": "pest --coverage"
     },
     "minimum-stability": "stable"
 }

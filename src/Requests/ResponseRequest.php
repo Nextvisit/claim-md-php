@@ -42,7 +42,7 @@ class ResponseRequest
      */
     public function fetchResponses(string $responseId, ?string $claimId = null): array
     {
-        if (empty($responseId)) {
+        if ($responseId === '') {
             throw new InvalidArgumentException('ResponseID cannot be empty');
         }
 
