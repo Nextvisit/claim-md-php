@@ -1,7 +1,7 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\Requests\FileRequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Requests\FileRequest;
 
 describe('FileRequest', function () {
     beforeEach(function () {
