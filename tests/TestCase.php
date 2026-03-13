@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\Tests;
+namespace Nextvisit\ClaimMD\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
 
