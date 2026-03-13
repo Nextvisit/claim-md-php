@@ -79,9 +79,9 @@ class ERARequest
      * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP request error occurs.
      */
-    public function getList(array|ERADTO|null $era = []): array
+    public function getList(array|ERADTO|null $era = null): array
     {
-        if ($era === null || $era === []) {
+        if ($era === null) {
             return $this->client->sendRequest('POST', self::ERA_LIST_ENDPOINT);
         }
         if ($era instanceof ERADTO) {
