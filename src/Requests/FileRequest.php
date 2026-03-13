@@ -1,11 +1,11 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\Requests;
+namespace Nextvisit\ClaimMD\Requests;
 
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Utils;
 use InvalidArgumentException;
-use Nextvisit\ClaimMDWrapper\Client;
+use Nextvisit\ClaimMD\Client;
 use Psr\Http\Message\StreamInterface;
 
 /**
