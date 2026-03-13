@@ -1,6 +1,6 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\DTO\ERADTO;
+use Nextvisit\ClaimMD\DTO\ERADTO;
 
 describe('ERADTO', function () {
     describe('construction', function () {
