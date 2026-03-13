@@ -1,8 +1,8 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\DTO\EligibilityDTO;
-use Nextvisit\ClaimMDWrapper\Requests\EligibilityRequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\DTO\EligibilityDTO;
+use Nextvisit\ClaimMD\Requests\EligibilityRequest;
 
 describe('EligibilityRequest', function () {
     beforeEach(function () {
