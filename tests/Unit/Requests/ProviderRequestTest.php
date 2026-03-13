@@ -1,8 +1,8 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\DTO\ProviderEnrollmentDTO;
-use Nextvisit\ClaimMDWrapper\Requests\ProviderRequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\DTO\ProviderEnrollmentDTO;
+use Nextvisit\ClaimMD\Requests\ProviderRequest;
 
 describe('ProviderRequest', function () {
     beforeEach(function () {

@@ -1,10 +1,10 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\Requests;
+namespace Nextvisit\ClaimMD\Requests;
 
 use GuzzleHttp\Exception\GuzzleException;
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\DTO\ProviderEnrollmentDTO;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\DTO\ProviderEnrollmentDTO;
 
 /**
  * Class ProviderRequest
