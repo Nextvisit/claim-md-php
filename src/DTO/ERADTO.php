@@ -81,7 +81,11 @@ readonly class ERADTO
 
         $d = DateTime::createFromFormat('m-d-Y', $date);
         if (!$d || $d->format('m-d-Y') !== $date) {
-            throw new InvalidArgumentException("$fieldName must be in mm-dd-yyyy format or 'today'/'yesterday'");
+            $message = "$fieldName must be in mm-dd-yyyy format";
+            if ($allowTodayYesterday) {
+                $message .= " or 'today'/'yesterday'";
+            }
+            throw new InvalidArgumentException($message);
         }
     }
 
