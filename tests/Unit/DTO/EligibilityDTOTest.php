@@ -1,6 +1,6 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\DTO\EligibilityDTO;
+use Nextvisit\ClaimMD\DTO\EligibilityDTO;
 
 describe('EligibilityDTO', function () {
     beforeEach(function () {
