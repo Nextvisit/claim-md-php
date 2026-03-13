@@ -6,6 +6,7 @@ use Generator;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
 use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 
 /**
  * Class ResponseRequest
@@ -37,6 +38,7 @@ class ResponseRequest
      *
      * @return array The API response containing the fetched responses
      * @throws InvalidArgumentException If the responseId is empty
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure during the API call
      */
     public function fetchResponses(string $responseId, ?string $claimId = null): array
@@ -64,6 +66,7 @@ class ResponseRequest
      * @param string|null $claimId Optional ClaimID to fetch responses for a specific claim
      *
      * @return Generator A generator that yields each page of responses
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure during any of the API calls
      */
     public function fetchAllResponses(?string $claimId = null): Generator
