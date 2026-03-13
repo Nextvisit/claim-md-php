@@ -5,6 +5,7 @@ namespace Nextvisit\ClaimMD\Requests;
 use GuzzleHttp\Exception\GuzzleException;
 use Nextvisit\ClaimMD\Client;
 use Nextvisit\ClaimMD\DTO\ERADTO;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 
 /**
  * Class ERARequest
@@ -32,6 +33,7 @@ class ERARequest
      * @param string $eraId The ID of the electronic remittance advice.
      *
      * @return array The JSON representation of the electronic remittance advice.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP request error occurs.
      */
     public function getJson(string $eraId): array
@@ -46,6 +48,7 @@ class ERARequest
      * @param string|null $pcn   An optional parameter for the PCN.
      *
      * @return array The response from the client request containing the PDF data (Base64 Encoded).
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP request error occurs.
      */
     public function getPDF(string $eraId, ?string $pcn = null): array
@@ -59,6 +62,7 @@ class ERARequest
      * @param string $eraId The identifier for the ERA to be retrieved.
      *
      * @return array The 835 ERA data as an array.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP request error occurs.
      */
     public function get835(string $eraId): array
@@ -72,6 +76,7 @@ class ERARequest
      * @param array|ERADTO|null $era Optional array or The DTO containing the parameters for the request.
      *
      * @return array The list of electronic remittance advices.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP request error occurs.
      */
     public function getList(array|ERADTO|null $era = []): array
