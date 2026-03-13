@@ -5,6 +5,7 @@ namespace Nextvisit\ClaimMD\Requests;
 use GuzzleHttp\Exception\GuzzleException;
 use Nextvisit\ClaimMD\Client;
 use Nextvisit\ClaimMD\DTO\ClaimAppealDTO;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 
 /**
  * Class ClaimRequest
@@ -32,6 +33,7 @@ class ClaimRequest
      * @param string $claimId The ID of the claim to be archived.
      *
      * @return array The response from the server after the request is made.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure.
      */
     public function archive(string $claimId): array
@@ -47,6 +49,7 @@ class ClaimRequest
      * @param string|null $field     Specific field to filter the modifications.
      *
      * @return array An array of modifications matching the specified criteria.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure.
      */
     public function listModifications(?string $modId = null, ?string $claimMdId = null, ?string $field = null): array
@@ -60,6 +63,7 @@ class ClaimRequest
      * @param array|ClaimAppealDTO $claimAppeal Array or Data Transfer Object containing claim appeal details.
      *
      * @return array The response from the appeal endpoint.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure.
      */
     public function appeal(array|ClaimAppealDTO $claimAppeal): array
@@ -77,6 +81,7 @@ class ClaimRequest
      * @param string|null $claimMdId Claim MD ID to filter the notes.
      *
      * @return array An array of notes matching the specified criteria.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure.
      */
     public function notes(?string $noteId = null, ?string $claimMdId = null): array
