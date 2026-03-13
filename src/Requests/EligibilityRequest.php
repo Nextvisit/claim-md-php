@@ -1,11 +1,11 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\Requests;
+namespace Nextvisit\ClaimMD\Requests;
 
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\DTO\EligibilityDTO;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\DTO\EligibilityDTO;
 
 /**
  * Class EligibilityRequest
