@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
 use Nextvisit\ClaimMD\Client;
 use Nextvisit\ClaimMD\DTO\EligibilityDTO;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 
 /**
  * Class EligibilityRequest
@@ -38,6 +39,7 @@ class EligibilityRequest
      * @param array|EligibilityDTO $eligibility Array or The eligibility data transfer object
      *
      * @return array The API response
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP Request fails
      */
     public function checkEligibilityJSON(array|EligibilityDTO $eligibility): array
@@ -55,6 +57,7 @@ class EligibilityRequest
      *
      * @return array The API response
      * @throws InvalidArgumentException If the file is not a valid resource
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If an HTTP Request fails
      */
     public function checkEligibility270271(mixed $file): array
