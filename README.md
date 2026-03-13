@@ -4,58 +4,80 @@
 
 ![CLAIM.md](https://cdn.prod.website-files.com/6619250355c3f9e1344f80b5/6619305fba1aef8ce5858ae7_claimmd_glow_120.png)
 
-Welcome to the unofficial PHP SDK for the [CLAIM.MD](https://www.claim.md/) API! 🎉 This library aims to simplify interactions with the official CLAIM.md API, providing a more developer-friendly way to integrate CLAIM.md services into your PHP applications.
+Welcome to the unofficial PHP SDK for the [CLAIM.MD](https://www.claim.md/) API! 🎉 This library aims to simplify
+interactions with the official CLAIM.md API, providing a more developer-friendly way to integrate CLAIM.md services into
+your PHP applications.
 
 ## ⚠️ Disclaimer
-**Nextvisit Inc. is not affiliated with CLAIM.MD in any way. This package is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, and noninfringement. Use at your own risk.**
 
-That being said, if you encounter any issues or have suggestions for improvement, feel free to open an issue or contribute to the package. 😊
+**Nextvisit Inc. is not affiliated with CLAIM.MD in any way. This package is provided "as is", without warranty of any
+kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular
+purpose, and noninfringement. Use at your own risk.**
 
+That being said, if you encounter any issues or have suggestions for improvement, feel free to open an issue or
+contribute to the package. 😊
 
 ## 🌟 Features
 
 This library provides a range of features to interact with the CLAIM.MD API:
+
 ### [Electronic Remittance Advice (ERA) Management](#electronic-remittance-advice-era)
+
 - [**List Received ERAs**](#get-eras-list): Get a list of all ERAs that have been received.
 - [**Get ERA 835**](#get-an-era-835): Get a specific ERA in the 835 format.
 - [**Get ERA PDF**](#get-an-era-pdf): Get a specific ERA in the PDF format.
 - [**Get ERA PDF**](#get-an-era-pdf): Get a specific ERA in the JSON format.
 
 ### [File Management](#file-management)
+
 - [**Upload Files**](#upload-files): Upload batch files to the CLAIM.md service.
 - [**Get Upload List**](#get-upload-list): Retrieve a list of uploaded files.
 
 ### [Provider Management](#provider-management)
+
 - [**Enroll Providers**](#enroll-providers): Enroll providers using detailed enrollment data.
-- [**Fetch Provider Enrollment**](#enroll-providers): If a provider is already enrolled, that information will be received from  the same `enroll()` method.
+- [**Fetch Provider Enrollment**](#enroll-providers): If a provider is already enrolled, that information will be
+  received from the same `enroll()` method.
 
 ### [Claim Management](#claim-management)
+
 - [**Claim Appeal**](#claim-appeal): Submit and manage claim appeals.
 - [**Fetch Claim Notes**](#fetch-claim-notes): Retrieve notes made on a specific claim.
 - [**Archive Claim**](#archive-claim): Archive a Claim.MD claim.
 - [**Claim Modifications**](#list-claim-modifications): Retrieve modifications for claims.
 
 ### [Response (Claim Status)](#response-claim-status)
+
 ##### This refers to a claim status response, not an HTTP or protocol response.
-- [**Fetch Responses**](#fetch-response): Retrieve claim statuses (referred to as "responses" in the Claim.MD API) from the Claim MD API.
+
+- [**Fetch Responses**](#fetch-response): Retrieve claim statuses (referred to as "responses" in the Claim.MD API) from
+  the Claim MD API.
 - [**Fetch All Responses**](#fetch-all-responses): Automatically handle pagination to retrieve all claim statuses.
 
 ### [Eligibility](#eligibility)
-- [**Realtime Eligibility X12 270/271**](#realtime-x12-270271-eligibility-check): Validate and check the eligibility of X12 270/271 formatted claim. Receiving the response in the format as well.
-- [**Realtime Eligibility JSON**](#realtime-parameter-eligibility-check): Validate and check the eligibility of a claim via parameters. Receiving the response in JSON format.
+
+- [**Realtime Eligibility X12 270/271**](#realtime-x12-270271-eligibility-check): Validate and check the eligibility of
+  X12 270/271 formatted claim. Receiving the response in the format as well.
+- [**Realtime Eligibility JSON**](#realtime-parameter-eligibility-check): Validate and check the eligibility of a claim
+  via parameters. Receiving the response in JSON format.
 
 ### [Payer](#payers)
+
 - [**Fetch Payers**](#list-payers): Retrieve a list of payers or a specific payer.
 
 ### [Data Transfer Objects (DTOs)](#data-transfer-objects-dtos)
+
 #### DTOs can make passing data to and from cleaner in your code. Consider using them over a traditional array.
+
 #### Note: All methods which use a DTO can instead take an array with correct [Claim.MD API](https://api.claim.md) mappings.
+
 - [**ClaimAppealDTO**](#claimappealdto)
 - [**ProviderEnrollmentDTO**](#providerenrollmentdto)
 - [**EligibilityDTO**](#eligibilitydto)
 - [**ERADTO**](#eradto)
 
 ### Utility Features
+
 - **Configuration Handling**: Easily configure the client with account keys and other settings.
 - **Validation**: Built-in validation for fields like dates, emails, phone numbers, state codes, etc.
 
@@ -74,8 +96,8 @@ composer require nextvisit/claim-md-php
 First, configure the `Client` with your account key:
 
 ```php
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\Config;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Config;
 
 $accountKey = 'your-account-key'; // Never hardcode your keys!
 $config = new Config();
@@ -88,8 +110,8 @@ $client = new Client($accountKey, $config);
 ### Get ERAs List
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ERARequest;
-use Nextvisit\ClaimMDWrapper\DTO\ERADTO;
+use Nextvisit\ClaimMD\Requests\ERARequest;
+use Nextvisit\ClaimMD\DTO\ERADTO;
 
 $eraRequest = new ERARequest($client);
 
@@ -101,16 +123,18 @@ $allResponse = $eraRequest->getList();
 ```
 
 ### Get an ERA 835
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ERARequest;
+use Nextvisit\ClaimMD\Requests\ERARequest;
 
 $eraRequest = new ERARequest($client);
 $response = $eraRequest->get835('era-id');
 ```
 
 ### Get an ERA PDF
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ERARequest;
+use Nextvisit\ClaimMD\Requests\ERARequest;
 
 $eraRequest = new ERARequest($client);
 
@@ -121,8 +145,9 @@ $regularResponse = $eraRequest->getPDF('era-id');
 ```
 
 ### Get an ERA JSON
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ERARequest;
+use Nextvisit\ClaimMD\Requests\ERARequest;
 
 $eraRequest = new ERARequest($client);
 $response = $eraRequest->getJson('era-id');
@@ -133,7 +158,7 @@ $response = $eraRequest->getJson('era-id');
 #### Upload Files
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\FileRequest;
+use Nextvisit\ClaimMD\Requests\FileRequest;
 
 $fileRequest = new FileRequest($client);
 $response = $fileRequest->upload(fopen('path/to/your/file.txt', 'r'));
@@ -144,7 +169,7 @@ print_r($response);
 #### Get Upload List
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\FileRequest;
+use Nextvisit\ClaimMD\Requests\FileRequest;
 
 $fileRequest = new FileRequest($client);
 $response = $fileRequest->getUploadList();
@@ -155,8 +180,8 @@ $response = $fileRequest->getUploadList();
 #### Enroll Providers
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ProviderRequest;
-use Nextvisit\ClaimMDWrapper\DTO\ProviderEnrollmentDTO;
+use Nextvisit\ClaimMD\Requests\ProviderRequest;
+use Nextvisit\ClaimMD\DTO\ProviderEnrollmentDTO;
 
 // If this provider is already enrolled, the response will contain that information.
 $providerEnrollment = new ProviderEnrollmentDTO(
@@ -178,8 +203,8 @@ $response = $providerRequest->enroll($providerEnrollment);
 #### Claim Appeal
 
 ```php
-use Nextvisit\ClaimMDWrapper\DTO\ClaimAppealDTO;
-use Nextvisit\ClaimMDWrapper\Requests\ClaimRequest;
+use Nextvisit\ClaimMD\DTO\ClaimAppealDTO;
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
 
 $appealDto = new ClaimAppealDTO(
     claimId: 'claim-id',
@@ -195,7 +220,7 @@ $response = $claimRequest->appeal($appealDto);
 #### Archive Claim
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ClaimRequest;
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
 
 $claimRequest = new ClaimRequest($client);
 $response = $claimRequest->archive('claim-id');
@@ -204,7 +229,7 @@ $response = $claimRequest->archive('claim-id');
 #### List Claim Modifications
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ClaimRequest;
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
 
 $claimRequest = new ClaimRequest($client);
 
@@ -220,7 +245,7 @@ $allResponse = $claimRequest->listModifications();
 #### Fetch Claim Notes
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ClaimRequest;
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
 
 $claimRequest = new ClaimRequest($client);
 
@@ -237,8 +262,9 @@ $allResponse = $claimRequest->notes();
 ### Response (Claim Status)
 
 #### Fetch Response
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ResponseRequest;
+use Nextvisit\ClaimMD\Requests\ResponseRequest;
 
 $responseRequest = new ResponseRequest($client);
 
@@ -248,8 +274,9 @@ $recentResponse = $responseRequest->fetchResponses($responseId);
 ```
 
 #### Fetch All Responses
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\ResponseRequest;
+use Nextvisit\ClaimMD\Requests\ResponseRequest;
 
 $responseRequest = new ResponseRequest($client);
 
@@ -266,7 +293,7 @@ foreach ($responseRequest->fetchAllResponses() as $response) {
 #### Realtime X12 270/271 Eligibility Check
 
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\EligibilityRequest;
+use Nextvisit\ClaimMD\Requests\EligibilityRequest;
 
 $eligibilityRequest = new EligibilityRequest($client);
 
@@ -277,9 +304,10 @@ $realtimeResponse = $eligibilityRequest->checkEligibility270271($eligibility270)
 ```
 
 #### Realtime Parameter Eligibility Check
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\EligibilityRequest;
-use Nextvisit\ClaimMDWrapper\DTO\EligibilityDTO;
+use Nextvisit\ClaimMD\Requests\EligibilityRequest;
+use Nextvisit\ClaimMD\DTO\EligibilityDTO;
 
 $eligibilityRequest = new EligibilityRequest($client);
 
@@ -302,8 +330,9 @@ $response = $eligibilityRequest->checkEligibilityJSON($eligDto);
 ### Payers
 
 #### List Payers
+
 ```php
-use Nextvisit\ClaimMDWrapper\Requests\PayerRequest;
+use Nextvisit\ClaimMD\Requests\PayerRequest;
 
 $payerRequest = new PayerRequest($client);
 
@@ -324,7 +353,7 @@ $allResponse = $payerRequest->listPayer();
 #### ClaimAppealDTO
 
 ```php
-use Nextvisit\ClaimMDWrapper\DTO\ClaimAppealDTO;
+use Nextvisit\ClaimMD\DTO\ClaimAppealDTO;
 
 $claimAppealDto = new ClaimAppealDTO(
     claimId: '12345',
@@ -363,7 +392,7 @@ $claimAppealDto = ClaimAppealDTO::fromArray($data);
 #### ProviderEnrollmentDTO
 
 ```php
-use Nextvisit\ClaimMDWrapper\DTO\ProviderEnrollmentDTO;
+use Nextvisit\ClaimMD\DTO\ProviderEnrollmentDTO;
 
 $providerEnrollmentDto = new ProviderEnrollmentDTO(
     payerId: 'payer-123',
@@ -414,7 +443,7 @@ $providerEnrollmentDto = ProviderEnrollmentDTO::fromArray($data);
 #### EligibilityDTO
 
 ```php
-use Nextvisit\ClaimMDWrapper\DTO\EligibilityDTO;
+use Nextvisit\ClaimMD\DTO\EligibilityDTO;
 
 $eligibilityDto = new EligibilityDTO(
     insLastName: 'Doe',
@@ -481,7 +510,7 @@ $eligibilityDto = EligibilityDTO::fromArray($data);
 #### ERADTO
 
 ```php
-use Nextvisit\ClaimMDWrapper\DTO\ERADTO;
+use Nextvisit\ClaimMD\DTO\ERADTO;
 
 $eraDto = new ERADTO(
     checkDate: '09-01-2023',
@@ -517,8 +546,15 @@ $eraDto = ERADTO::fromArray($data);
 
 ## 🤝 Contributing
 
-Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.
+Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or
+submit a pull request.
 
 ## 📄 License
 
 This package is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+## Credits
+
+- [Nextvisit AI](https://nextvisit.ai)
+- [Ryan Yannelli](https://ryanyannelli.com)
+- [Kyle Yannelli](https://github.com/kyleyannelli)
