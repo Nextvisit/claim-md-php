@@ -1,61 +1,61 @@
 {
-    "name": "nextvisit/claim-md-php",
-    "description": "An unofficial PHP wrapper for the official Claim.MD API.",
-    "type": "library",
-    "license": "MIT",
-    "require": {
-        "php": ">=8.2",
-        "guzzlehttp/guzzle": "^7.9",
-        "ext-json": "*"
+  "name": "nextvisit/claim-md-php",
+  "description": "An unofficial PHP wrapper for the official Claim.MD API.",
+  "type": "library",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.3",
+    "guzzlehttp/guzzle": "^7.9",
+    "ext-json": "*"
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.6",
+    "pestphp/pest": "^3.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Nextvisit\\ClaimMD\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Nextvisit\\ClaimMD\\Tests\\": "tests/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Kyle Yannelli",
+      "email": "kyleyannelli@gmail.com",
+      "homepage": "https://github.com/kyleyannelli",
+      "role": "Developer"
     },
-    "require-dev": {
-        "mockery/mockery": "^1.6",
-        "pestphp/pest": "^3.0"
-    },
-    "autoload": {
-        "psr-4": {
-            "Nextvisit\\ClaimMDWrapper\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Nextvisit\\ClaimMDWrapper\\Tests\\": "tests/"
-        }
-    },
-    "authors": [
-        {
-            "name": "Kyle Yannelli",
-            "email": "kyleyannelli@gmail.com",
-            "homepage": "https://github.com/kyleyannelli",
-            "role": "Developer"
-        },
-        {
-            "name": "Ryan Yannelli",
-            "email": "ryanyannelli@gmail.com",
-            "homepage": "https://github.com/yannelli",
-            "role": "Developer"
-        }
-    ],
-    "keywords": [
-        "claimmd",
-        "api",
-        "insurance-claims",
-        "x12",
-        "php-wrapper"
-    ],
-    "homepage": "https://github.com/Nextvisit/claim-md-php",
-    "support": {
-        "issues": "https://github.com/Nextvisit/claim-md-php/issues"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "pestphp/pest-plugin": true
-        }
-    },
-    "scripts": {
-        "test": "pest",
-        "test:coverage": "pest --coverage"
-    },
-    "minimum-stability": "stable"
+    {
+      "name": "Ryan Yannelli",
+      "email": "ryanyannelli@gmail.com",
+      "homepage": "https://github.com/yannelli",
+      "role": "Developer"
+    }
+  ],
+  "keywords": [
+    "claimmd",
+    "api",
+    "insurance-claims",
+    "x12",
+    "php-wrapper"
+  ],
+  "homepage": "https://github.com/Nextvisit/claim-md-php",
+  "support": {
+    "issues": "https://github.com/Nextvisit/claim-md-php/issues"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
+  },
+  "scripts": {
+    "test": "pest",
+    "test:coverage": "pest --coverage"
+  },
+  "minimum-stability": "stable"
 }
