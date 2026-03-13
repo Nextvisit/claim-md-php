@@ -6,6 +6,7 @@ use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Psr7\Utils;
 use InvalidArgumentException;
 use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 use Psr\Http\Message\StreamInterface;
 
 /**
@@ -34,6 +35,7 @@ class FileRequest
      *
      * @return array The API response
      * @throws InvalidArgumentException If upload date is not in the format yyyy-mm-dd
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException HTTP Request Failure
      */
     public function getUploadList(?int $page = null, ?string $uploadDate = null): array
@@ -62,6 +64,7 @@ class FileRequest
      *
      * @return array The API response
      * @throws InvalidArgumentException If file is not a valid resource.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException HTTP Request Failure
      */
     public function upload($file, ?string $filename = null): array
