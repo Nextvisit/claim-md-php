@@ -11,7 +11,7 @@
 |
 */
 
-pest()->extend(Nextvisit\ClaimMDWrapper\Tests\TestCase::class)->in('Unit');
+pest()->extend(Nextvisit\ClaimMD\Tests\TestCase::class)->in('Unit');
 
 /*
 |--------------------------------------------------------------------------
