@@ -1,7 +1,7 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\Requests\PayerRequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Requests\PayerRequest;
 
 describe('PayerRequest', function () {
     beforeEach(function () {

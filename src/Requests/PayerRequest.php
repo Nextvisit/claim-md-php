@@ -1,9 +1,9 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\Requests;
+namespace Nextvisit\ClaimMD\Requests;
 
 use GuzzleHttp\Exception\GuzzleException;
-use Nextvisit\ClaimMDWrapper\Client;
+use Nextvisit\ClaimMD\Client;
 
 /**
  * Class PayerRequest
