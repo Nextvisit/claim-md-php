@@ -1,6 +1,6 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\DTO\ClaimAppealDTO;
+use Nextvisit\ClaimMD\DTO\ClaimAppealDTO;
 
 describe('ClaimAppealDTO', function () {
     describe('construction', function () {
