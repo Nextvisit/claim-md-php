@@ -61,6 +61,10 @@ This library provides a range of features to interact with the CLAIM.MD API:
 - [**Realtime Eligibility JSON**](#realtime-parameter-eligibility-check): Validate and check the eligibility of a claim
   via parameters. Receiving the response in JSON format.
 
+### [Webhook](#webhook)
+
+- [**Parse Webhook Payload**](#parse-webhook-payload): Parse inbound webhook events for provider enrollment updates and appeal form creation/updates.
+
 ### [Payer](#payers)
 
 - [**Fetch Payers**](#list-payers): Retrieve a list of payers or a specific payer.
@@ -75,6 +79,7 @@ This library provides a range of features to interact with the CLAIM.MD API:
 - [**ProviderEnrollmentDTO**](#providerenrollmentdto)
 - [**EligibilityDTO**](#eligibilitydto)
 - [**ERADTO**](#eradto)
+- [**WebhookPayloadDTO**](#webhookpayloaddto)
 
 ### Utility Features
 
@@ -327,6 +332,51 @@ $eligDto = new EligibilityDTO(
 $response = $eligibilityRequest->checkEligibilityJSON($eligDto);
 ```
 
+### Webhook
+
+#### Parse Webhook Payload
+
+```php
+use Nextvisit\ClaimMD\DTO\WebhookPayloadDTO;
+
+// Parse directly from the raw JSON request body
+$json = file_get_contents('php://input');
+$webhook = WebhookPayloadDTO::fromJsonString($json);
+
+// Or from a decoded array
+$webhook = WebhookPayloadDTO::fromArray($decodedData);
+
+// Access top-level fields
+$webhook->utcTime;          // UTC current time
+$webhook->acctNumber;       // Claim.MD Account Number
+$webhook->remoteAcctNumber; // Customer assigned account number
+
+// Iterate over events
+foreach ($webhook->events as $event) {
+    $event->eventId;   // Unique event identifier
+    $event->eventType; // "enroll" or "appeal"
+    $event->eventTime; // UTC time of event
+
+    if ($event->eventType === 'enroll') {
+        $event->enroll->enrollId;   // Enrollment ID
+        $event->enroll->event;      // "enrolled", "received", "completed", "rejected"
+        $event->enroll->enrollType; // "era", "1500", "ub", "elig", "attach"
+        $event->enroll->provNpi;    // Provider NPI
+        $event->enroll->payerId;    // Payer ID
+    }
+
+    if ($event->eventType === 'appeal') {
+        $event->appeal->appealId;      // Appeal ID
+        $event->appeal->event;         // "created", "mailed", "update", "faxed", "transmitted", "failure"
+        $event->appeal->appealType;    // "electronic", "mail", "fax", "download"
+        $event->appeal->claimId;       // Associated Claim.MD claim ID
+        $event->appeal->remoteClaimId; // User-assigned claim ID
+        $event->appeal->serviceFee;    // Service fees
+        $event->appeal->pages;         // Number of pages
+    }
+}
+```
+
 ### Payers
 
 #### List Payers
@@ -542,6 +592,41 @@ $data = [
 ];
 
 $eraDto = ERADTO::fromArray($data);
+```
+
+#### WebhookPayloadDTO
+
+```php
+use Nextvisit\ClaimMD\DTO\WebhookPayloadDTO;
+
+// Parse from a raw JSON string (e.g., webhook request body)
+$json = file_get_contents('php://input');
+$webhookPayload = WebhookPayloadDTO::fromJsonString($json);
+
+// Or from a decoded array
+$data = [
+    'UTCTime'            => '2026-03-13T12:00:00Z',
+    'acct_number'        => 'ACCT-001',
+    'remote_acct_number' => 'REMOTE-001',
+    'events'             => [
+        [
+            'eventid'    => 'EVT-001',
+            'event_type' => 'enroll',
+            'event_time' => '2026-03-13T11:00:00Z',
+            'event_data' => [
+                'enroll' => [
+                    'enrollid'    => 'ENR-001',
+                    'event'       => 'enrolled',
+                    'enroll_type' => 'era',
+                    'prov_npi'    => '1234567890',
+                    'payerid'     => 'PAYER-001',
+                ],
+            ],
+        ],
+    ],
+];
+
+$webhookPayload = WebhookPayloadDTO::fromArray($data);
 ```
 
 ## 🤝 Contributing
