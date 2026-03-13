@@ -1,11 +1,11 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\Requests;
+namespace Nextvisit\ClaimMD\Requests;
 
 use Generator;
 use GuzzleHttp\Exception\GuzzleException;
 use InvalidArgumentException;
-use Nextvisit\ClaimMDWrapper\Client;
+use Nextvisit\ClaimMD\Client;
 
 /**
  * Class ResponseRequest
