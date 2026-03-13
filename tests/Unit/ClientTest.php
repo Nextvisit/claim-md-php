@@ -7,6 +7,12 @@ use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Middleware;
 use Nextvisit\ClaimMD\Client;
 use Nextvisit\ClaimMD\Config;
+use Nextvisit\ClaimMD\Exceptions\ApiException;
+use Nextvisit\ClaimMD\Exceptions\AuthenticationException;
+use Nextvisit\ClaimMD\Exceptions\InvalidResponseException;
+use Nextvisit\ClaimMD\Exceptions\NotFoundException;
+use Nextvisit\ClaimMD\Exceptions\RateLimitException;
+use Nextvisit\ClaimMD\Exceptions\ServerException;
 
 describe('Client', function () {
     it('creates a client with account key and config', function () {
@@ -113,5 +119,125 @@ describe('Client', function () {
 
         $body = (string) $container[0]['request']->getBody();
         expect($body)->toContain('AccountKey=test-account-key');
+    });
+
+    it('throws AuthenticationException on 401 response', function () {
+        $mock = new MockHandler([
+            new Response(401, [], json_encode(['error' => 'Invalid AccountKey'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('bad-key', new Config(), $guzzleClient);
+
+        $client->sendRequest('POST', '/test');
+    })->throws(AuthenticationException::class, 'authentication failed');
+
+    it('throws RateLimitException on 429 response', function () {
+        $mock = new MockHandler([
+            new Response(429, ['Retry-After' => '30'], json_encode(['error' => 'Rate limit exceeded'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        $client->sendRequest('POST', '/test');
+    })->throws(RateLimitException::class, 'rate limit exceeded');
+
+    it('includes retry-after seconds on RateLimitException', function () {
+        $mock = new MockHandler([
+            new Response(429, ['Retry-After' => '45'], json_encode(['error' => 'Rate limit'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        try {
+            $client->sendRequest('POST', '/test');
+        } catch (RateLimitException $e) {
+            expect($e->getRetryAfter())->toBe(45);
+            expect($e->getStatusCode())->toBe(429);
+            expect($e->getResponseBody())->toBe(['error' => 'Rate limit']);
+        }
+    });
+
+    it('throws NotFoundException on 404 response', function () {
+        $mock = new MockHandler([
+            new Response(404, [], json_encode(['error' => 'Not found'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        $client->sendRequest('POST', '/test');
+    })->throws(NotFoundException::class);
+
+    it('throws ServerException on 500 response', function () {
+        $mock = new MockHandler([
+            new Response(500, [], json_encode(['error' => 'Internal server error'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        $client->sendRequest('POST', '/test');
+    })->throws(ServerException::class);
+
+    it('throws ServerException on 503 response', function () {
+        $mock = new MockHandler([
+            new Response(503, [], json_encode(['error' => 'Service unavailable'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        try {
+            $client->sendRequest('POST', '/test');
+        } catch (ServerException $e) {
+            expect($e->getStatusCode())->toBe(503);
+            expect($e->getResponseBody())->toBe(['error' => 'Service unavailable']);
+        }
+    });
+
+    it('throws ApiException on other 4xx responses', function () {
+        $mock = new MockHandler([
+            new Response(422, [], json_encode(['error' => 'Validation failed'])),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        try {
+            $client->sendRequest('POST', '/test');
+        } catch (ApiException $e) {
+            expect($e->getStatusCode())->toBe(422);
+            expect($e->getResponseBody())->toBe(['error' => 'Validation failed']);
+        }
+    });
+
+    it('throws InvalidResponseException on non-JSON response', function () {
+        $mock = new MockHandler([
+            new Response(200, [], '<html>Not JSON</html>'),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        $client->sendRequest('POST', '/test');
+    })->throws(InvalidResponseException::class, 'non-JSON response');
+
+    it('provides raw body on InvalidResponseException', function () {
+        $mock = new MockHandler([
+            new Response(200, [], 'not json'),
+        ]);
+
+        $guzzleClient = new GuzzleClient(['handler' => HandlerStack::create($mock)]);
+        $client = new Client('test-key', new Config(), $guzzleClient);
+
+        try {
+            $client->sendRequest('POST', '/test');
+        } catch (InvalidResponseException $e) {
+            expect($e->getRawBody())->toBe('not json');
+            expect($e->getStatusCode())->toBe(200);
+        }
     });
 });
