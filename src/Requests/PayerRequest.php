@@ -4,6 +4,7 @@ namespace Nextvisit\ClaimMD\Requests;
 
 use GuzzleHttp\Exception\GuzzleException;
 use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 
 /**
  * Class PayerRequest
@@ -34,6 +35,7 @@ class PayerRequest
      * @param string|null $payerName Optional payer name to filter the payers.
      *
      * @return array An array containing the payer list and available services.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure.
      */
     public function listPayer(?string $payerId = null, ?string $payerName = null): array
