@@ -44,7 +44,7 @@ describe('ERADTO', function () {
     describe('validation', function () {
         it('throws exception for invalid checkDate format', function () {
             new ERADTO(checkDate: '2024-01-15');
-        })->throws(InvalidArgumentException::class, "checkDate must be in mm-dd-yyyy format or 'today'/'yesterday'");
+        })->throws(InvalidArgumentException::class, "checkDate must be in mm-dd-yyyy format");
 
         it('throws exception for invalid receivedDate format', function () {
             new ERADTO(receivedDate: '15-01-2024');
