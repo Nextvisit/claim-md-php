@@ -111,6 +111,13 @@ readonly class EligibilityDTO
         if (!preg_match('/^\d{8}$/', $date)) {
             throw new InvalidArgumentException("$fieldName must be in yyyymmdd format");
         }
+
+        $year = (int) substr($date, 0, 4);
+        $month = (int) substr($date, 4, 2);
+        $day = (int) substr($date, 6, 2);
+        if (!checkdate($month, $day, $year)) {
+            throw new InvalidArgumentException("$fieldName must be a valid calendar date in yyyymmdd format");
+        }
     }
 
     /**
@@ -120,7 +127,7 @@ readonly class EligibilityDTO
      */
     private function validatePatientRelationship(): void
     {
-        if (!in_array($this->patientRelationship, ['18', 'G8'])) {
+        if (!in_array($this->patientRelationship, ['18', 'G8'], true)) {
             throw new InvalidArgumentException("patientRelationship must be either '18' or 'G8'");
         }
     }
@@ -134,7 +141,7 @@ readonly class EligibilityDTO
      */
     private function validateSex(string $sex, string $fieldName): void
     {
-        if (!in_array($sex, ['M', 'F'])) {
+        if (!in_array($sex, ['M', 'F'], true)) {
             throw new InvalidArgumentException("$fieldName must be either 'M' or 'F'");
         }
     }
@@ -146,7 +153,7 @@ readonly class EligibilityDTO
      */
     private function validateProvTaxIdType(): void
     {
-        if (!in_array($this->provTaxIdType, ['E', 'S'])) {
+        if (!in_array($this->provTaxIdType, ['E', 'S'], true)) {
             throw new InvalidArgumentException("provTaxIdType must be either 'E' or 'S'");
         }
     }
