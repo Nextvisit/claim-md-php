@@ -1,7 +1,7 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\Requests\ResponseRequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Requests\ResponseRequest;
 
 describe('ResponseRequest', function () {
     beforeEach(function () {
