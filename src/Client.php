@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper;
+namespace Nextvisit\ClaimMD;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
@@ -11,7 +11,7 @@ use GuzzleHttp\RequestOptions;
  *
  * This class handles HTTP communication with the Claim.MD API.
  *
- * @package Nextvisit\ClaimMDWrapper
+ * @package Nextvisit\ClaimMD
  */
 class Client
 {
