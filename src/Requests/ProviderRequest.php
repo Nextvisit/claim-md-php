@@ -5,6 +5,7 @@ namespace Nextvisit\ClaimMD\Requests;
 use GuzzleHttp\Exception\GuzzleException;
 use Nextvisit\ClaimMD\Client;
 use Nextvisit\ClaimMD\DTO\ProviderEnrollmentDTO;
+use Nextvisit\ClaimMD\Exceptions\ClaimMDException;
 
 /**
  * Class ProviderRequest
@@ -37,6 +38,7 @@ class ProviderRequest
      *                                                        it will be converted to an array before sending.
      *
      * @return array The result of the enrollment request as returned by the API.
+     * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException If there's an HTTP request failure during the API call.
      */
     public function enroll(array|ProviderEnrollmentDTO $providerEnrollment): array
