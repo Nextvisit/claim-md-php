@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper;
+namespace Nextvisit\ClaimMD;
 
 /**
  * Class Config

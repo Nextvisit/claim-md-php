@@ -1,6 +1,6 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Config;
+use Nextvisit\ClaimMD\Config;
 
 describe('Config', function () {
     it('returns the correct base URI', function () {
