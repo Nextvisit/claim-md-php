@@ -111,8 +111,7 @@ readonly class ProviderEnrollmentDTO
             if (empty($this->provNameLast)) {
                 throw new InvalidArgumentException('provNameLast is required when provNpi is not provided.');
             }
-            // Assuming provider is an individual if provNameFirst is provided
-            if ($this->provNameLast && empty($this->provNameFirst)) {
+            if (empty($this->provNameFirst)) {
                 throw new InvalidArgumentException('provNameFirst is required when provNpi is not provided and the provider is an individual.');
             }
         }

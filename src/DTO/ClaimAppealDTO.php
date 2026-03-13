@@ -2,6 +2,8 @@
 
 namespace Nextvisit\ClaimMD\DTO;
 
+use InvalidArgumentException;
+
 /**
  * Class ClaimAppealDTO
  *
@@ -30,7 +32,7 @@ readonly class ClaimAppealDTO
      * @param string|null $contactState
      * @param string|null $contactZip
      *
-     * @throws \InvalidArgumentException If validation fails
+     * @throws InvalidArgumentException If validation fails
      */
     public function __construct(
         public ?string $claimId = null,
@@ -56,24 +58,24 @@ readonly class ClaimAppealDTO
     /**
      * Validate that either claimId or remoteClaimId is provided.
      *
-     * @throws \InvalidArgumentException If neither claimId nor remoteClaimId is provided
+     * @throws InvalidArgumentException If neither claimId nor remoteClaimId is provided
      */
     private function validateRequiredFields(): void
     {
         if (empty($this->claimId) && empty($this->remoteClaimId)) {
-            throw new \InvalidArgumentException('Either claimId or remoteClaimId must be provided.');
+            throw new InvalidArgumentException('Either claimId or remoteClaimId must be provided.');
         }
     }
 
     /**
      * Validate the email address.
      *
-     * @throws \InvalidArgumentException If the email is invalid
+     * @throws InvalidArgumentException If the email is invalid
      */
     private function validateEmail(): void
     {
         if ($this->contactEmail && !filter_var($this->contactEmail, FILTER_VALIDATE_EMAIL)) {
-            throw new \InvalidArgumentException('contactEmail must be a valid email address.');
+            throw new InvalidArgumentException('contactEmail must be a valid email address.');
         }
     }
 
@@ -83,24 +85,24 @@ readonly class ClaimAppealDTO
      * @param string|null $phoneNumber The phone number to validate
      * @param string $fieldName The name of the field being validated
      *
-     * @throws \InvalidArgumentException If the phone number is invalid
+     * @throws InvalidArgumentException If the phone number is invalid
      */
     private function validatePhoneNumber(?string $phoneNumber, string $fieldName): void
     {
         if ($phoneNumber && !preg_match('/^\+?[0-9\-\(\)\s]+$/', $phoneNumber)) {
-            throw new \InvalidArgumentException("$fieldName must be a valid phone number.");
+            throw new InvalidArgumentException("$fieldName must be a valid phone number.");
         }
     }
 
     /**
      * Validate the state code.
      *
-     * @throws \InvalidArgumentException If the state code is invalid
+     * @throws InvalidArgumentException If the state code is invalid
      */
     private function validateStateCode(): void
     {
         if ($this->contactState && !preg_match('/^[A-Z]{2}$/', $this->contactState)) {
-            throw new \InvalidArgumentException('contactState must be a valid two-letter state code.');
+            throw new InvalidArgumentException('contactState must be a valid two-letter state code.');
         }
     }
 
