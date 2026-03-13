@@ -9,7 +9,6 @@ use Nextvisit\ClaimMDWrapper\DTO\EligibilityDTO;
 
 /**
  * Class EligibilityRequest
- *
  * Handles eligibility-related requests to the ClaimMD API.
  */
 class EligibilityRequest
@@ -17,24 +16,27 @@ class EligibilityRequest
     /**
      * Endpoint for eligibility checks using 270/271 files.
      */
-    private const ELIGIBILITY_ENDPOINT = '/services/elig/';
+    private const string ELIGIBILITY_ENDPOINT = '/services/elig/';
 
     /**
      * Endpoint for eligibility checks using JSON data.
      */
-    private const ELIGIBILITY_DATA_ENDPOINT = '/services/eligdata/';
+    private const string ELIGIBILITY_DATA_ENDPOINT = '/services/eligdata/';
 
     /**
      * EligibilityRequest constructor.
      *
      * @param Client $client The API client instance.
      */
-    public function __construct(private readonly Client $client) {}
+    public function __construct(private readonly Client $client)
+    {
+    }
 
     /**
      * Check eligibility by submitting eligibility data in JSON format.
      *
      * @param array|EligibilityDTO $eligibility Array or The eligibility data transfer object
+     *
      * @return array The API response
      * @throws GuzzleException If an HTTP Request fails
      */
@@ -50,6 +52,7 @@ class EligibilityRequest
      * Check eligibility by submitting a 270 file.
      *
      * @param resource $file The 270 file resource
+     *
      * @return array The API response
      * @throws InvalidArgumentException If the file is not a valid resource
      * @throws GuzzleException If an HTTP Request fails
@@ -61,7 +64,7 @@ class EligibilityRequest
         }
 
         $data = [
-            'File' => Utils::streamFor($file)
+            'File' => Utils::streamFor($file),
         ];
 
         return $this->client->sendRequest('POST', self::ELIGIBILITY_ENDPOINT, $data, true);

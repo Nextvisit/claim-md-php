@@ -10,13 +10,12 @@ use Psr\Http\Message\StreamInterface;
 
 /**
  * Class FileRequest
- *
  * Handles file-related requests to the Claim.MD service.
  */
 class FileRequest
 {
-    private const UPLOAD_ENDPOINT = '/services/upload';
-    private const UPLOAD_LIST_ENDPOINT = '/services/uploadlist';
+    private const string UPLOAD_ENDPOINT = '/services/upload';
+    private const string UPLOAD_LIST_ENDPOINT = '/services/uploadlist';
 
     /**
      * FileRequest constructor.
@@ -30,8 +29,9 @@ class FileRequest
     /**
      * Retrieve a list of uploaded files from the Claim.MD service
      *
-     * @param int|null $page The page number for paginated results (optional)
+     * @param int|null    $page       The page number for paginated results (optional)
      * @param string|null $uploadDate The upload date filter in format yyyy-mm-dd (optional)
+     *
      * @return array The API response
      * @throws InvalidArgumentException If upload date is not in the format yyyy-mm-dd
      * @throws GuzzleException HTTP Request Failure
@@ -57,8 +57,9 @@ class FileRequest
     /**
      * Upload a batch file to the Claim.MD service
      *
-     * @param resource $file The file to upload (must be a resource)
+     * @param resource    $file     The file to upload (must be a resource)
      * @param string|null $filename The name of the file (optional)
+     *
      * @return array The API response
      * @throws InvalidArgumentException If file is not a valid resource.
      * @throws GuzzleException HTTP Request Failure
@@ -80,6 +81,7 @@ class FileRequest
      * Prepare the file for upload by converting it to a StreamInterface
      *
      * @param resource $file The file resource to prepare
+     *
      * @return StreamInterface The prepared file as a StreamInterface
      * @throws InvalidArgumentException If file is not a valid resource.
      */
