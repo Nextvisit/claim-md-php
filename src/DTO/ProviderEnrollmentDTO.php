@@ -1,6 +1,6 @@
 <?php
 
-namespace Nextvisit\ClaimMDWrapper\DTO;
+namespace Nextvisit\ClaimMD\DTO;
 
 use InvalidArgumentException;
 

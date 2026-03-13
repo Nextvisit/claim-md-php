@@ -1,6 +1,6 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\DTO\ProviderEnrollmentDTO;
+use Nextvisit\ClaimMD\DTO\ProviderEnrollmentDTO;
 
 describe('ProviderEnrollmentDTO', function () {
     describe('construction', function () {
