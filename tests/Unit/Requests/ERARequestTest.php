@@ -1,8 +1,8 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\DTO\ERADTO;
-use Nextvisit\ClaimMDWrapper\Requests\ERARequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\DTO\ERADTO;
+use Nextvisit\ClaimMD\Requests\ERARequest;
 
 describe('ERARequest', function () {
     beforeEach(function () {
