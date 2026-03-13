@@ -1,8 +1,8 @@
 <?php
 
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\DTO\ClaimAppealDTO;
-use Nextvisit\ClaimMDWrapper\Requests\ClaimRequest;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\DTO\ClaimAppealDTO;
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
 
 describe('ClaimRequest', function () {
     beforeEach(function () {
