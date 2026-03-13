@@ -50,6 +50,12 @@ class FileRequest
             if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $uploadDate)) {
                 throw new InvalidArgumentException('Upload date must be in the format yyyy-mm-dd');
             }
+
+            $parts = explode('-', $uploadDate);
+            if (!checkdate((int) $parts[1], (int) $parts[2], (int) $parts[0])) {
+                throw new InvalidArgumentException('Upload date must be a valid calendar date in the format yyyy-mm-dd');
+            }
+
             $data['UploadDate'] = $uploadDate;
         }
 
@@ -67,7 +73,7 @@ class FileRequest
      * @throws ClaimMDException If the API returns an error response.
      * @throws GuzzleException HTTP Request Failure
      */
-    public function upload($file, ?string $filename = null): array
+    public function upload(mixed $file, ?string $filename = null): array
     {
         $data = [
             'File' => $this->prepareFile($file),
@@ -88,7 +94,7 @@ class FileRequest
      * @return StreamInterface The prepared file as a StreamInterface
      * @throws InvalidArgumentException If file is not a valid resource.
      */
-    private function prepareFile($file): StreamInterface
+    private function prepareFile(mixed $file): StreamInterface
     {
         if (is_resource($file)) {
             return Utils::streamFor($file);
