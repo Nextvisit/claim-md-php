@@ -8,27 +8,29 @@ use Nextvisit\ClaimMDWrapper\DTO\ClaimAppealDTO;
 
 /**
  * Class ClaimRequest
- *
  * Handles various claim-related operations such as archiving, modifications, appeals, and notes.
  */
 class ClaimRequest
 {
-    private const ARCHIVE_ENDPOINT = '/services/archive/';
-    private const MODIFY_ENDPOINT = '/services/modify/';
-    private const APPEAL_ENDPOINT = '/services/appeal/';
-    private const NOTES_ENDPOINT = '/services/notes/';
+    private const string ARCHIVE_ENDPOINT = '/services/archive/';
+    private const string MODIFY_ENDPOINT = '/services/modify/';
+    private const string APPEAL_ENDPOINT = '/services/appeal/';
+    private const string NOTES_ENDPOINT = '/services/notes/';
 
     /**
      * ClaimRequest constructor.
      *
      * @param Client $client The client used for making HTTP requests.
      */
-    public function __construct(private readonly Client $client) {}
+    public function __construct(private readonly Client $client)
+    {
+    }
 
     /**
      * Archives a claim with the given claim ID.
      *
      * @param string $claimId The ID of the claim to be archived.
+     *
      * @return array The response from the server after the request is made.
      * @throws GuzzleException If there's an HTTP request failure.
      */
@@ -40,9 +42,10 @@ class ClaimRequest
     /**
      * Retrieves a list of modifications based on provided parameters.
      *
-     * @param string|null $modId Modification ID to filter the modifications.
+     * @param string|null $modId     Modification ID to filter the modifications.
      * @param string|null $claimMdId Claim MD ID to filter the modifications.
-     * @param string|null $field Specific field to filter the modifications.
+     * @param string|null $field     Specific field to filter the modifications.
+     *
      * @return array An array of modifications matching the specified criteria.
      * @throws GuzzleException If there's an HTTP request failure.
      */
@@ -55,6 +58,7 @@ class ClaimRequest
      * Submits an appeal request for a claim.
      *
      * @param array|ClaimAppealDTO $claimAppeal Array or Data Transfer Object containing claim appeal details.
+     *
      * @return array The response from the appeal endpoint.
      * @throws GuzzleException If there's an HTTP request failure.
      */
@@ -69,8 +73,9 @@ class ClaimRequest
     /**
      * Retrieves a list of notes based on provided parameters.
      *
-     * @param string|null $noteId Note ID to filter the notes.
+     * @param string|null $noteId    Note ID to filter the notes.
      * @param string|null $claimMdId Claim MD ID to filter the notes.
+     *
      * @return array An array of notes matching the specified criteria.
      * @throws GuzzleException If there's an HTTP request failure.
      */
