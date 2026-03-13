@@ -5,8 +5,8 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use GuzzleHttp\Middleware;
-use Nextvisit\ClaimMDWrapper\Client;
-use Nextvisit\ClaimMDWrapper\Config;
+use Nextvisit\ClaimMD\Client;
+use Nextvisit\ClaimMD\Config;
 
 describe('Client', function () {
     it('creates a client with account key and config', function () {
