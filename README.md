@@ -1,4 +1,4 @@
-[![Tests](https://github.com/Nextvisit/claim-md-php/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/Nextvisit/claim-md-php/actions/workflows/tests.yml)
+![GitHub branch check runs](https://img.shields.io/github/check-runs/nextvisit/claim-md-php/main?style=flat-square) ![Packagist Version](https://img.shields.io/packagist/v/nextvisit/claim-md-php?style=flat-square&link=https%3A%2F%2Fnextvisit.ai) ![Packagist Downloads](https://img.shields.io/packagist/dt/nextvisit/claim-md-php?style=flat-square)
 
 # Claim.MD PHP SDK
 
