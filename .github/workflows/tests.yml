@@ -2,9 +2,13 @@ name: Tests
 
 on:
   push:
-    branches: [main, master]
+    branches: [master]
   pull_request:
     branches: [main, master]
+  workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   tests:
@@ -47,3 +51,6 @@ jobs:
 
       - name: Run tests
         run: composer test
+
+      - name: Run release tests
+        run: python3 -B -m unittest discover -s .github/scripts -p 'test_*.py'

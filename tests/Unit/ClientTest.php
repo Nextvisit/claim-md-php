@@ -1,9 +1,11 @@
 <?php
 
 use GuzzleHttp\Client as GuzzleClient;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Middleware;
 use Nextvisit\ClaimMD\Client;
 use Nextvisit\ClaimMD\Config;
@@ -13,6 +15,8 @@ use Nextvisit\ClaimMD\Exceptions\InvalidResponseException;
 use Nextvisit\ClaimMD\Exceptions\NotFoundException;
 use Nextvisit\ClaimMD\Exceptions\RateLimitException;
 use Nextvisit\ClaimMD\Exceptions\ServerException;
+use Nextvisit\ClaimMD\Requests\EligibilityRequest;
+use Nextvisit\ClaimMD\Requests\FileRequest;
 
 describe('Client', function () {
     it('creates a client with account key and config', function () {
@@ -56,7 +60,7 @@ describe('Client', function () {
         expect($body)->toContain('data=value');
     });
 
-    it('sends a multipart request when isMultipart is true', function () {
+    it('sends upload boundaries matching the request body', function (string $requestClass, string $method, string $endpoint) {
         $container = [];
         $history = Middleware::history($container);
 
@@ -70,14 +74,35 @@ describe('Client', function () {
         $guzzleClient = new GuzzleClient(['handler' => $handlerStack]);
         $client = new Client('test-account-key', new Config(), $guzzleClient);
 
-        $result = $client->sendRequest('POST', '/upload', ['file' => 'content'], true);
+        $file = fopen('php://temp', 'w+');
+        fwrite($file, 'synthetic X12 upload');
+        rewind($file);
 
-        expect($result)->toBe(['uploaded' => true]);
+        try {
+            $result = (new $requestClass($client))->$method($file);
+            expect($result)->toBe(['uploaded' => true]);
 
-        $request = $container[0]['request'];
-        $contentType = $request->getHeaderLine('Content-Type');
-        expect($contentType)->toContain('multipart/form-data');
-    });
+            $request = $container[0]['request'];
+            expect($request->getUri()->getPath())->toBe($endpoint);
+            expect($request->getHeaderLine('Content-Type'))->toContain('multipart/form-data');
+            expect(preg_match('/boundary=([^;]+)/', $request->getHeaderLine('Content-Type'), $matches))->toBe(1);
+            $boundary = trim($matches[1], '"');
+            expect((string) $request->getBody())
+                ->toStartWith("--{$boundary}\r\n")
+                ->toContain("\r\n--{$boundary}--\r\n")
+                ->toContain('name="File"')
+                ->toContain('synthetic X12 upload')
+                ->toContain('name="AccountKey"')
+                ->toContain('test-account-key');
+        } finally {
+            if (is_resource($file)) {
+                fclose($file);
+            }
+        }
+    })->with([
+        'batch upload' => [FileRequest::class, 'upload', '/services/upload/'],
+        '270 eligibility' => [EligibilityRequest::class, 'checkEligibility270271', '/services/elig/'],
+    ]);
 
     it('includes additional headers when provided', function () {
         $container = [];
@@ -240,4 +265,101 @@ describe('Client', function () {
             expect($e->getStatusCode())->toBe(200);
         }
     });
+
+    it('throws for HTTP 200 API errors', function (array $errors, array $codes, string $message, string $method) {
+        $body = ['error' => $errors, 'request_id' => 'synthetic-request'];
+        $mock = new MockHandler([new Response(200, ['Content-Type' => 'application/json'], json_encode($body))]);
+        $client = new Client('test-key', httpClient: new GuzzleClient(['handler' => HandlerStack::create($mock)]));
+
+        try {
+            $client->$method('POST', '/test');
+            $this->fail('Expected an API exception');
+        } catch (ApiException $e) {
+            expect($e::class)->toBe(ApiException::class);
+            expect($e->getStatusCode())->toBe(200);
+            expect($e->getCode())->toBe(200);
+            expect($e->getResponseBody())->toBe($body);
+            expect($e->getApiErrorCodes())->toBe($codes);
+            expect($e->getApiErrors())->toBe(array_is_list($errors) ? $errors : [$errors]);
+            expect($e->getMessage())->toBe($message);
+        }
+    })->with([
+        'object with error_mesg' => [['error_code' => '401', 'error_mesg' => 'Invalid claim_form value.'], ['401'], 'Invalid claim_form value.'],
+        'list with error_message' => [[['error_code' => 20, 'error_message' => 'Invalid AccountKey']], ['20'], 'Invalid AccountKey'],
+        'object with error_message' => [['error_code' => 711, 'error_message' => 'No claims found.'], ['711'], 'No claims found.'],
+        'list with mixed message fields' => [[
+            ['error_code' => '710', 'error_mesg' => 'Invalid transmit_date value.'],
+            ['error_code' => 401, 'error_message' => 'Invalid claim_form value.'],
+        ], ['710', '401'], 'Invalid transmit_date value.; Invalid claim_form value.'],
+    ])->with(['sendRequest', 'sendX12Request']);
+
+    it('returns claim status data with an empty top-level error', function () {
+        $body = ['error' => [], 'claim' => [['claimid' => '123', 'error' => ['error_code' => '20']]]];
+        $mock = new MockHandler([new Response(200, [], json_encode($body))]);
+        $client = new Client('test-key', httpClient: new GuzzleClient(['handler' => HandlerStack::create($mock)]));
+
+        expect($client->sendRequest('POST', '/services/response/'))->toBe($body);
+    });
+
+    it('returns exact X12 bytes and requests JSON error bodies', function () {
+        $x12 = "ISA*00*          *00*          ~\r\nST*837*0001~\r\nSE*2*0001~\r\n";
+        $container = [];
+        $mock = new MockHandler([new Response(200, ['Content-Type' => 'Application/EDI-X12; charset=us-ascii'], $x12)]);
+        $stack = HandlerStack::create($mock);
+        $stack->push(Middleware::history($container));
+        $client = new Client('test-key', httpClient: new GuzzleClient(['handler' => $stack]));
+
+        expect($client->sendX12Request('POST', '/services/claimdata/', ['AccountKey' => 'caller-key']))->toBe($x12);
+        expect($container[0]['request']->getHeaderLine('Accept'))->toBe('application/json');
+        expect((string) $container[0]['request']->getBody())->toBe('AccountKey=test-key');
+    });
+
+    it('rejects unexpected X12 response formats', function (string $contentType, string $body) {
+        $mock = new MockHandler([new Response(200, ['Content-Type' => $contentType], $body)]);
+        $client = new Client('test-key', httpClient: new GuzzleClient(['handler' => HandlerStack::create($mock)]));
+
+        try {
+            $client->sendX12Request('POST', '/services/claimdata/');
+            $this->fail('Expected an invalid response exception');
+        } catch (InvalidResponseException $e) {
+            expect($e->getRawBody())->toBe($body);
+            expect($e->getStatusCode())->toBe(200);
+            expect($e->getMessage())->toContain('non-X12 response');
+        }
+    })->with([
+        ['text/html', '<html>Error</html>'],
+        ['application/json', '{"status":"ok"}'],
+    ]);
+
+    it('keeps HTTP errors on X12 requests', function (bool $httpErrors) {
+        $body = ['error' => ['error_code' => '711', 'error_mesg' => 'No claims found.']];
+        $mock = new MockHandler([new Response(429, ['Retry-After' => '30'], json_encode($body))]);
+        $client = new Client('test-key', httpClient: new GuzzleClient([
+            'handler' => HandlerStack::create($mock),
+            'http_errors' => $httpErrors,
+        ]));
+
+        try {
+            $client->sendX12Request('POST', '/services/claimdata/');
+            $this->fail('Expected a rate limit exception');
+        } catch (RateLimitException $e) {
+            expect($e->getStatusCode())->toBe(429);
+            expect($e->getRetryAfter())->toBe(30);
+            expect($e->getApiErrorCodes())->toBe(['711']);
+            expect($e->getResponseBody())->toBe($body);
+        }
+    })->with([true, false]);
+
+    it('passes through request failures without a response', function (string $method) {
+        $exception = RequestException::create(new Request('POST', '/test'));
+        $mock = new MockHandler([$exception]);
+        $client = new Client('test-key', httpClient: new GuzzleClient(['handler' => HandlerStack::create($mock)]));
+
+        try {
+            $client->$method('POST', '/test');
+            $this->fail('Expected the request exception');
+        } catch (RequestException $e) {
+            expect($e)->toBe($exception);
+        }
+    })->with(['sendRequest', 'sendX12Request']);
 });

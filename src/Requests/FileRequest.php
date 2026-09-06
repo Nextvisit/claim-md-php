@@ -15,8 +15,8 @@ use Psr\Http\Message\StreamInterface;
  */
 class FileRequest
 {
-    private const string UPLOAD_ENDPOINT = '/services/upload';
-    private const string UPLOAD_LIST_ENDPOINT = '/services/uploadlist';
+    private const string UPLOAD_ENDPOINT = '/services/upload/';
+    private const string UPLOAD_LIST_ENDPOINT = '/services/uploadlist/';
 
     /**
      * FileRequest constructor.
