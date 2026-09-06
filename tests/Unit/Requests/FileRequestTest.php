@@ -18,7 +18,7 @@ describe('FileRequest', function () {
             $this->mockClient
                 ->shouldReceive('sendRequest')
                 ->once()
-                ->with('POST', '/services/uploadlist', [])
+                ->with('POST', '/services/uploadlist/', [])
                 ->andReturn(['uploads' => []]);
 
             $result = $this->fileRequest->getUploadList();
@@ -30,7 +30,7 @@ describe('FileRequest', function () {
             $this->mockClient
                 ->shouldReceive('sendRequest')
                 ->once()
-                ->with('POST', '/services/uploadlist', ['Page' => 2])
+                ->with('POST', '/services/uploadlist/', ['Page' => 2])
                 ->andReturn(['uploads' => [], 'page' => 2]);
 
             $result = $this->fileRequest->getUploadList(page: 2);
@@ -42,7 +42,7 @@ describe('FileRequest', function () {
             $this->mockClient
                 ->shouldReceive('sendRequest')
                 ->once()
-                ->with('POST', '/services/uploadlist', ['UploadDate' => '2024-01-15'])
+                ->with('POST', '/services/uploadlist/', ['UploadDate' => '2024-01-15'])
                 ->andReturn(['uploads' => []]);
 
             $result = $this->fileRequest->getUploadList(uploadDate: '2024-01-15');
@@ -54,7 +54,7 @@ describe('FileRequest', function () {
             $this->mockClient
                 ->shouldReceive('sendRequest')
                 ->once()
-                ->with('POST', '/services/uploadlist', ['Page' => 1, 'UploadDate' => '2024-01-15'])
+                ->with('POST', '/services/uploadlist/', ['Page' => 1, 'UploadDate' => '2024-01-15'])
                 ->andReturn(['uploads' => []]);
 
             $result = $this->fileRequest->getUploadList(1, '2024-01-15');

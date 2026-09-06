@@ -31,6 +31,24 @@ describe('ProviderEnrollmentDTO', function () {
             expect($dto->provNameFirst)->toBe('John');
         });
 
+        it('creates an organization without NPI or first name and excludes the SDK flag from API fields', function () {
+            $dto = new ProviderEnrollmentDTO(
+                payerId: 'PAYER123',
+                enrollType: 'era',
+                provTaxId: '12-3456789',
+                provNameLast: 'Example Clinic',
+                isOrganization: true
+            );
+
+            expect($dto->isOrganization)->toBeTrue();
+            expect($dto->toArray())->toBe([
+                'payerid' => 'PAYER123',
+                'enroll_type' => 'era',
+                'prov_taxid' => '12-3456789',
+                'prov_name_l' => 'Example Clinic',
+            ]);
+        });
+
         it('creates a DTO with all optional fields', function () {
             $dto = new ProviderEnrollmentDTO(
                 payerId: 'PAYER123',
@@ -121,6 +139,15 @@ describe('ProviderEnrollmentDTO', function () {
             );
         })->throws(InvalidArgumentException::class, 'provNameLast is required when provNpi is not provided.');
 
+        it('throws exception when NPI not provided and organization name is missing', function () {
+            new ProviderEnrollmentDTO(
+                payerId: 'PAYER123',
+                enrollType: 'era',
+                provTaxId: '12-3456789',
+                isOrganization: true
+            );
+        })->throws(InvalidArgumentException::class, 'provNameLast is required when provNpi is not provided.');
+
         it('throws exception when NPI not provided and provNameFirst is missing for individual', function () {
             new ProviderEnrollmentDTO(
                 payerId: 'PAYER123',
@@ -200,6 +227,20 @@ describe('ProviderEnrollmentDTO', function () {
     });
 
     describe('fromArray', function () {
+        it('creates an organization from API fields and excludes the SDK flag from API fields', function () {
+            $data = [
+                'payerid' => 'PAYER123',
+                'enroll_type' => 'era',
+                'prov_taxid' => '12-3456789',
+                'prov_name_l' => 'Example Clinic',
+            ];
+
+            $dto = ProviderEnrollmentDTO::fromArray($data, isOrganization: true);
+
+            expect($dto->isOrganization)->toBeTrue();
+            expect($dto->toArray())->toBe($data);
+        });
+
         it('creates a DTO from array', function () {
             $data = [
                 'payerid' => 'PAYER123',

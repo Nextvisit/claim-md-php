@@ -23,7 +23,7 @@ readonly class ProviderEnrollmentDTO
      * @param string $enrollType The enrollment type
      * @param string $provTaxId The provider tax ID
      * @param string|null $provNpi The provider NPI (optional)
-     * @param string|null $provNameLast The provider's last name (optional)
+     * @param string|null $provNameLast The organization name or individual's last name (optional)
      * @param string|null $provNameFirst The provider's first name (optional)
      * @param string|null $provNameMiddle The provider's middle name (optional)
      * @param string|null $contact The contact person (optional)
@@ -37,6 +37,7 @@ readonly class ProviderEnrollmentDTO
      * @param string|null $provCity The provider's city (optional)
      * @param string|null $provState The provider's state (optional)
      * @param string|null $provZip The provider's ZIP code (optional)
+     * @param bool $isOrganization Whether to validate as an organization; excluded from API fields
      */
     public function __construct(
         public string  $payerId,
@@ -56,7 +57,8 @@ readonly class ProviderEnrollmentDTO
         public ?string $provAddr2 = null,
         public ?string $provCity = null,
         public ?string $provState = null,
-        public ?string $provZip = null
+        public ?string $provZip = null,
+        public bool $isOrganization = false
     ) {
         $this->validateRequiredFields();
         $this->validateEnrollType();
@@ -111,7 +113,7 @@ readonly class ProviderEnrollmentDTO
             if (empty($this->provNameLast)) {
                 throw new InvalidArgumentException('provNameLast is required when provNpi is not provided.');
             }
-            if (empty($this->provNameFirst)) {
+            if (!$this->isOrganization && empty($this->provNameFirst)) {
                 throw new InvalidArgumentException('provNameFirst is required when provNpi is not provided and the provider is an individual.');
             }
         }
@@ -177,10 +179,11 @@ readonly class ProviderEnrollmentDTO
      * Creates a ProviderEnrollmentDTO from an array.
      *
      * @param array $data The array containing provider enrollment data.
+     * @param bool $isOrganization Whether to validate as an organization; excluded from API fields.
      * @return self A new instance of ProviderEnrollmentDTO.
      * @throws InvalidArgumentException If required fields are missing.
      */
-    public static function fromArray(array $data): self
+    public static function fromArray(array $data, bool $isOrganization = false): self
     {
         return new self(
             payerId: $data['payerid'] ?? throw new InvalidArgumentException('payerid is required.'),
@@ -200,7 +203,8 @@ readonly class ProviderEnrollmentDTO
             provAddr2: $data['prov_addr_2'] ?? null,
             provCity: $data['prov_city'] ?? null,
             provState: $data['prov_state'] ?? null,
-            provZip: $data['prov_zip'] ?? null
+            provZip: $data['prov_zip'] ?? null,
+            isOrganization: $isOrganization
         );
     }
 }

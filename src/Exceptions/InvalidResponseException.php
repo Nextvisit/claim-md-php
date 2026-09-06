@@ -5,7 +5,7 @@ namespace Nextvisit\ClaimMD\Exceptions;
 use Throwable;
 
 /**
- * Thrown when the API response cannot be decoded as valid JSON.
+ * Thrown when the API response does not match the expected format.
  */
 class InvalidResponseException extends ClaimMDException
 {
@@ -15,13 +15,14 @@ class InvalidResponseException extends ClaimMDException
     public function __construct(
         int $statusCode,
         string $rawBody,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
+        string $expectedFormat = 'JSON'
     ) {
         $this->statusCode = $statusCode;
         $this->rawBody = $rawBody;
 
         parent::__construct(
-            "Claim.MD API returned a non-JSON response (HTTP {$statusCode})",
+            "Claim.MD API returned a non-{$expectedFormat} response (HTTP {$statusCode})",
             $statusCode,
             $previous
         );

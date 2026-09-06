@@ -5,6 +5,7 @@ namespace Nextvisit\ClaimMD;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Psr7\Query;
 use GuzzleHttp\RequestOptions;
 use Nextvisit\ClaimMD\Exceptions\ApiException;
 use Nextvisit\ClaimMD\Exceptions\AuthenticationException;
@@ -12,6 +13,7 @@ use Nextvisit\ClaimMD\Exceptions\InvalidResponseException;
 use Nextvisit\ClaimMD\Exceptions\NotFoundException;
 use Nextvisit\ClaimMD\Exceptions\RateLimitException;
 use Nextvisit\ClaimMD\Exceptions\ServerException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Class Client
@@ -67,6 +69,7 @@ class Client
      * @param array $data Request data
      * @param bool $isMultipart Whether the request contains multipart data
      * @param array $additionalHeaders Additional headers to include in the request
+     * @param bool $repeatFormFields Encode array values as repeated form fields
      *
      * @return array The API response as an associative array
      *
@@ -74,18 +77,50 @@ class Client
      * @throws RateLimitException If the API rate limit is exceeded (429)
      * @throws NotFoundException If the requested resource is not found (404)
      * @throws ServerException If the API returns a 5xx response
-     * @throws ApiException If the API returns any other non-2xx response
+     * @throws ApiException If the API returns an HTTP error or a top-level error element
      * @throws InvalidResponseException If the response body is not valid JSON
      * @throws GuzzleException If there's a network-level HTTP request failure
      */
-    public function sendRequest(string $method, string $uri, array $data = [], bool $isMultipart = false, array $additionalHeaders = []): array
+    public function sendRequest(string $method, string $uri, array $data = [], bool $isMultipart = false, array $additionalHeaders = [], bool $repeatFormFields = false): array
     {
-        $options = $this->prepareRequestOptions($data, $isMultipart, $additionalHeaders);
+        $options = $this->prepareRequestOptions($data, $isMultipart, $additionalHeaders, $repeatFormFields);
+        $response = $this->request($method, $uri, $options);
+        $rawBody = (string) $response->getBody();
+        $decoded = json_decode($rawBody, true);
 
+        if (!is_array($decoded)) {
+            throw new InvalidResponseException($response->getStatusCode(), $rawBody);
+        }
+
+        $this->handleApiErrors($response->getStatusCode(), $decoded);
+
+        return $decoded;
+    }
+
+    public function sendX12Request(string $method, string $uri, array $data = []): string
+    {
+        $response = $this->request($method, $uri, $this->prepareRequestOptions($data, false, []));
+        $rawBody = (string) $response->getBody();
+        $decoded = json_decode($rawBody, true);
+
+        if (is_array($decoded)) {
+            $this->handleApiErrors($response->getStatusCode(), $decoded);
+        }
+
+        $contentType = strtolower(trim(explode(';', $response->getHeaderLine('Content-Type'))[0]));
+        if ($contentType !== 'application/edi-x12') {
+            throw new InvalidResponseException($response->getStatusCode(), $rawBody, expectedFormat: 'X12');
+        }
+
+        return $rawBody;
+    }
+
+    private function request(string $method, string $uri, array $options): ResponseInterface
+    {
         try {
             $response = $this->httpClient->request($method, $uri, $options);
         } catch (RequestException $e) {
-            $response = $e->getResponse();
+            $response = method_exists($e, 'getResponse') ? $e->getResponse() : null;
 
             if ($response === null) {
                 throw $e;
@@ -93,30 +128,29 @@ class Client
 
             $this->handleErrorResponse(
                 $response->getStatusCode(),
-                $response->getBody()->getContents(),
+                (string) $response->getBody(),
                 $response->getHeaderLine('Retry-After'),
                 $e
             );
         }
 
         $statusCode = $response->getStatusCode();
-        $rawBody = $response->getBody()->getContents();
-
         if ($statusCode >= 400) {
             $this->handleErrorResponse(
                 $statusCode,
-                $rawBody,
+                (string) $response->getBody(),
                 $response->getHeaderLine('Retry-After')
             );
         }
 
-        $decoded = json_decode($rawBody, true);
+        return $response;
+    }
 
-        if (!is_array($decoded)) {
-            throw new InvalidResponseException($statusCode, $rawBody);
+    private function handleApiErrors(int $statusCode, array $responseBody): void
+    {
+        if (!empty($responseBody['error'])) {
+            throw new ApiException($statusCode, $responseBody);
         }
-
-        return $decoded;
     }
 
     /**
@@ -135,6 +169,7 @@ class Client
         ?\Throwable $previous = null
     ): never {
         $responseBody = json_decode($rawBody, true);
+        $responseBody = is_array($responseBody) ? $responseBody : null;
 
         match (true) {
             $statusCode === 401 => throw new AuthenticationException($responseBody, $previous),
@@ -155,10 +190,11 @@ class Client
      * @param array $data Request data
      * @param bool $isMultipart Whether the request contains multipart data
      * @param array $additionalHeaders Additional headers to include in the request
+     * @param bool $repeatFormFields Encode array values as repeated form fields
      *
      * @return array The prepared request options
      */
-    private function prepareRequestOptions(array $data, bool $isMultipart, array $additionalHeaders): array
+    private function prepareRequestOptions(array $data, bool $isMultipart, array $additionalHeaders, bool $repeatFormFields = false): array
     {
         $data['AccountKey'] = $this->accountKey;
 
@@ -169,13 +205,18 @@ class Client
         if ($isMultipart) {
             $options = [
                 RequestOptions::MULTIPART => $this->prepareMultipartData($data),
-                'headers' => array_merge($headers, ['Content-Type' => 'multipart/form-data'], $additionalHeaders),
+                'headers' => array_merge($headers, $additionalHeaders),
             ];
         } else {
             $options = [
-                RequestOptions::FORM_PARAMS => $data,
                 'headers' => array_merge($headers, ['Content-Type' => 'application/x-www-form-urlencoded'], $additionalHeaders),
             ];
+
+            if ($repeatFormFields) {
+                $options[RequestOptions::BODY] = Query::build($data, PHP_QUERY_RFC1738);
+            } else {
+                $options[RequestOptions::FORM_PARAMS] = $data;
+            }
         }
 
         return $options;

@@ -19,14 +19,14 @@ contribute to the package. 😊
 
 ## 🌟 Features
 
-This library provides a range of features to interact with the CLAIM.MD API:
+This library wraps all 16 service endpoints in [Claim.MD API v1.19](https://api.claim.md/) and parses webhook payloads.
 
 ### [Electronic Remittance Advice (ERA) Management](#electronic-remittance-advice-era)
 
 - [**List Received ERAs**](#get-eras-list): Get a list of all ERAs that have been received.
 - [**Get ERA 835**](#get-an-era-835): Get a specific ERA in the 835 format.
 - [**Get ERA PDF**](#get-an-era-pdf): Get a specific ERA in the PDF format.
-- [**Get ERA PDF**](#get-an-era-pdf): Get a specific ERA in the JSON format.
+- [**Get ERA JSON**](#get-an-era-json): Get a specific ERA in the JSON format.
 
 ### [File Management](#file-management)
 
@@ -43,7 +43,8 @@ This library provides a range of features to interact with the CLAIM.MD API:
 
 - [**Claim Appeal**](#claim-appeal): Submit and manage claim appeals.
 - [**Fetch Claim Notes**](#fetch-claim-notes): Retrieve notes made on a specific claim.
-- [**Archive Claim**](#archive-claim): Archive a Claim.MD claim.
+- [**Archive Claim**](#archive-claim): Archive one or more Claim.MD claims.
+- [**Download Claims as 837**](#download-claims-as-837): Download claims by transmission date with page iteration.
 - [**Claim Modifications**](#list-claim-modifications): Retrieve modifications for claims.
 
 ### [Response (Claim Status)](#response-claim-status)
@@ -88,6 +89,8 @@ This library provides a range of features to interact with the CLAIM.MD API:
 
 ## 📦 Installation
 
+Requires PHP 8.3 or later with the JSON extension. Composer accepts Guzzle `^7.15.5 || ^8.1`.
+
 You can install the package via Composer:
 
 ```bash
@@ -109,6 +112,33 @@ $config = new Config();
 
 $client = new Client($accountKey, $config);
 ```
+
+### Error Handling
+
+HTTP 200 responses with a non-empty top-level `error` now throw `ApiException`.
+The exception stores the HTTP status and complete response body. Claim.MD error codes are returned separately as strings.
+Both object and list errors are supported, including `error_mesg` and `error_message`.
+
+```php
+use Nextvisit\ClaimMD\Exceptions\ApiException;
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
+
+$claimRequest = new ClaimRequest($client);
+
+try {
+    $response = $claimRequest->archive('claim-id');
+} catch (ApiException $e) {
+    $httpStatus = $e->getStatusCode();
+    $apiCodes = $e->getApiErrorCodes();
+    $errors = $e->getApiErrors();
+    $responseBody = $e->getResponseBody();
+    $message = $e->getMessage();
+}
+```
+
+HTTP 401, 404, 429, and 5xx responses keep their specific exception classes.
+Network failures throw Guzzle exceptions. Per-claim status messages remain part of the returned data.
+`sendRequest()` returns JSON arrays. `sendX12Request()` returns X12 bytes and handles JSON error bodies through the same exceptions.
 
 ### Electronic Remittance Advice (ERA)
 
@@ -203,6 +233,23 @@ $providerRequest = new ProviderRequest($client);
 $response = $providerRequest->enroll($providerEnrollment);
 ```
 
+For an organization without an NPI, supply its name and set `isOrganization: true`:
+
+```php
+$organization = new ProviderEnrollmentDTO(
+    payerId: 'payer-id',
+    enrollType: 'era',
+    provTaxId: '123456789',
+    provNameLast: 'Example Clinic',
+    isOrganization: true
+);
+
+$response = $providerRequest->enroll($organization);
+```
+
+The flag defaults to `false` and is excluded from the API payload. Individuals without an NPI still need both names.
+For an API field array, use `ProviderEnrollmentDTO::fromArray($data, isOrganization: true)`.
+
 ### Claim Management
 
 #### Claim Appeal
@@ -229,7 +276,39 @@ use Nextvisit\ClaimMD\Requests\ClaimRequest;
 
 $claimRequest = new ClaimRequest($client);
 $response = $claimRequest->archive('claim-id');
+$bulkResponse = $claimRequest->archive(['claim-id-1', 'claim-id-2']);
 ```
+
+Bulk requests send repeated `claimid` fields. Pass a non-empty list of non-empty strings.
+
+#### Download Claims as 837
+
+Use `1500` for 837P, `ub` for 837I, or `dental` for 837D. Dates use `YYYY-MM-DD` and pages start at zero.
+Each request returns up to 1,000 claims as X12 bytes. The optional billing NPI, tax ID, and payer fields filter the results.
+
+```php
+use Nextvisit\ClaimMD\Requests\ClaimRequest;
+
+$claimRequest = new ClaimRequest($client);
+$x12 = $claimRequest->downloadTransmittedClaims(
+    transmitDate: '2026-08-19',
+    claimForm: '1500',
+    billNpi: '1234567890',
+    billTaxId: '123456789',
+    payerId: 'payer-id',
+    page: 0
+);
+
+file_put_contents('claims.837', $x12);
+
+foreach ($claimRequest->downloadAllTransmittedClaims('2026-08-19', '1500') as $page => $x12) {
+    file_put_contents("claims-{$page}.837", $x12);
+}
+```
+
+The single-page method throws `ApiException` for code `711` when no claims remain.
+The generator stops on that code and throws other errors. Each yielded value is a complete 837 file.
+Claim.MD generates files from current claim data, so later edits can appear in the download. [Claim download documentation](https://api.claim.md/#/paths/~1services~1claimdata~1/post)
 
 #### List Claim Modifications
 
@@ -304,7 +383,7 @@ $eligibilityRequest = new EligibilityRequest($client);
 
 $eligibility270 = fopen('path/to/your/file.270', 'r');
 
-// the response will contain a 270 file
+// The response array contains the 271 response.
 $realtimeResponse = $eligibilityRequest->checkEligibility270271($eligibility270);
 ```
 
@@ -392,7 +471,7 @@ $specifiedPayerResponse = $payerRequest->listPayer(payerId: $payerId);
 
 // specify a general payer name search
 $payerName = 'payer-name';
-$searchResponse = $payerRequest->listPayer($payerName: $payerName);
+$searchResponse = $payerRequest->listPayer(payerName: $payerName);
 
 // get all payers
 $allResponse = $payerRequest->listPayer();
@@ -629,7 +708,45 @@ $data = [
 $webhookPayload = WebhookPayloadDTO::fromArray($data);
 ```
 
+## Releases
+
+Pushes to `main` run the PHP suite and release tests. After they pass, the Release workflow reads
+[Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) since the latest stable tag and selects the largest SemVer bump:
+
+| Commit | Bump |
+| --- | --- |
+| `fix:`, `perf:`, `revert:` | Patch |
+| `feat:` | Minor |
+| `!` after the type/scope, or a `BREAKING CHANGE:` / `BREAKING-CHANGE:` footer | Major |
+| `docs:`, `chore:`, `ci:`, and other types without a breaking change | No release |
+
+Use a Conventional Commit title when squash-merging a pull request. For example,
+`feat: add 837 downloads` selects a minor bump and `fix!: throw exceptions for API errors` selects a major bump.
+
+The workflow commits [CHANGELOG.md](CHANGELOG.md), pushes an annotated `vX.Y.Z` tag, and publishes a GitHub release with the same notes.
+Composer reads package versions from Git tags. [Packagist](https://packagist.org/packages/nextvisit/claim-md-php) has automatic updates enabled for this package.
+
+The workflow uses the built-in `GITHUB_TOKEN`. Runs are serialized and skip a source commit if `main` has advanced.
+Re-running a failed job completes a missing GitHub release after a successful tag push. The Actions **Run workflow** button also runs tests before publishing from `main`.
+
+Preview the next release from committed history without changing files or publishing:
+
+```bash
+python3 .github/scripts/release.py --dry-run
+```
+
 ## 🤝 Contributing
+
+Development uses Pest 4 and Mockery 1.6. Composer resolves the lockfile against PHP 8.3 to keep it installable on the minimum supported version.
+After code, dependency, and documentation changes are complete, add the affected tests and run:
+
+```bash
+composer test
+composer validate --strict
+composer check-platform-reqs
+composer audit
+python3 -B -m unittest discover -s .github/scripts -p 'test_*.py'
+```
 
 Contributions are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or
 submit a pull request.
